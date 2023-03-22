@@ -1,0 +1,18 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "root": "src",
+  "compilerOptions": {
+    "assets": [
+      {
+        "include": "**/model.conf",
+        "outDir": "dist/src",
+        "watchAssets": true
+      },
+      {
+        "include": "**/*.csv",
+        "outDir": "dist/src"
+      }
+    ]
+  }
+}

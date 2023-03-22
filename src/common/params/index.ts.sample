@@ -1,0 +1,51 @@
+// Parametros de configuración
+export const Configurations = {
+  SCORE_PASSWORD: 3, // NIVEL MINIMO DE CALIFICACION PASSWORD
+  SALT_ROUNDS: 10, // NUMERO DE SALTOS PARA GENERACION DE HASH
+  WRONG_LOGIN_LIMIT: 3, // NUMERO MAXIMO DE INTENTOS DE INICIO DE SESION ERRONEOS
+  MINUTES_LOGIN_LOCK: 15, // TIEMPO EN MINUTOS DE BLOQUEO DE CUENTA
+  // LISTA DE DOMINIOS DE EMAIL NO PERMITIDOS
+  BLACK_LIST_EMAILS: [
+    '10minutemail.com',
+    'fremont.nodebalancer.linode.com',
+    'yopmail.com',
+    'cool.fr.nf',
+    'jetable.fr.nf',
+    'nospam.ze.tc',
+    'nomail.xl.cx',
+    'mega.zik.dj',
+    'speed.1s.fr',
+    'courriel.fr.nf',
+    'moncourrier.fr.nf',
+    'monemail.fr.nf',
+    'monmail.fr.nf',
+    'mailinator',
+    'binkmail.com',
+    'bobmail.info',
+    'chammy.info',
+    'devnullmail.com',
+    'letthemeatspam.com',
+    'mailinater.com',
+    'mailinator.net',
+    'mailinator2.com',
+    'notmailinator.com',
+    'reallymymail.com',
+    'reconmail.com',
+    'safetymail.info',
+    'sendspamhere.com',
+    'sogetthis.com',
+    'spambooger.com',
+    'spamherelots.com',
+    'spamhereplease.com',
+    'spamthisplease.com',
+    'streetwisemail.com',
+    'suremail.info',
+    'thisisnotmyrealemail.com',
+    'tradermail.info',
+    'veryrealemail.com',
+    'zippymail.info',
+    'guerrillamail',
+    'maildrop',
+    'mailnesia',
+  ],
+}

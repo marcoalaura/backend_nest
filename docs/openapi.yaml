@@ -1,0 +1,934 @@
+openapi: 3.0.0
+info:
+  title: PROYECTO BASE BACKEND
+  version: '1.0'
+  description: Documentación del Proyecto base BACKEND
+  contact:
+    name: mlaura
+servers:
+  - url: 'http://localhost:3000'
+  - url: 'https://<SITIO>/backend'
+paths:
+  /api/estado:
+    get:
+      summary: Api para obtener el estado de la aplicacion
+      tags: ['estado']
+      operationId: get-api-v1-status
+      description: Api de estado del sistema
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Servicio funcionando correctamente.'
+                  hora:
+                    type: number
+                    example: 1612800763
+  /api/auth:
+    post:
+      summary: Api para autenticacion con usuario y contrasena
+      tags: ['autenticacion']
+      operationId: post-api-v1-auth
+      description: Api para autenticacion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usuario:
+                  type: string
+                  example: '123456'
+                contrasena:
+                  type: string
+                  example: 'password'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'ok'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ1ZGUxMmRmLTNjYzMtNWE1OC1hNzQyLWJlMjQwMzA0ODJkOCIsInJvbGVzIjpbIkFETUlOSVNUUkFET1IiXSwiaWF0IjoxNjE3OTM0NTU0LCJleHAiOjE2MTc5MzQ4NTR9.ELcQrw-YPo3q6CDLs53StTq2OHRVkk_bp9lCiDUbO2g'
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+  /api/usuarios/cuenta/perfil:
+    get:
+      summary: Obtiene la informacion del perfil del usuario
+      tags: ['usuario']
+      operationId: get-api-v1-usuarios-profile
+      description: Api para obtener la informacion del perfil del usuario
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro(s) obtenido(s) con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                      usuario:
+                        type: string
+                        example: 'ADMINISTRADOR'
+                      roles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            rol:
+                              type: string
+                              example: 'ADMINISTRADOR'
+                            modulos:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                    example: 'b320fe27-5644-5712-8423-198302b01e25'
+                                  label:
+                                    type: string
+                                    example: 'Usuarios'
+                                  url:
+                                    type: string
+                                    example: '/usuarios'
+                                  nombre:
+                                    type: string
+                                    example: 'usuarios'
+                                  estado:
+                                    type: string
+                                    example: 'ACTIVO'
+                                  propiedades:
+                                    type: object
+                                    properties:
+                                      icono:
+                                        type: string
+                                        example: 'mdiAccountCog'
+                                      color_light:
+                                        type: string
+                                        example: '#3F1929'
+                                      color_dark:
+                                        type: string
+                                        example: '#3F1929'
+                                  subModulo:
+                                    type: array
+                      persona:
+                        type: object
+                        properties:
+                          nombres:
+                            type: string
+                            example: 'JUAN'
+                          primerApellido:
+                            type: string
+                            example: 'PEREZ'
+                          segundoApellido:
+                            type: string
+                            example: 'PEREZ'
+                          tipoDocumento:
+                            type: string
+                            example: 'CI'
+                          nroDocumento:
+                            type: string
+                            example: '9270815'
+                          fechaNacimiento:
+                            type: string
+                            example: '2002-02-09T00:00:00.000Z'
+  /api/usuarios/{id}/activacion:
+    patch:
+      summary: Activa un usuario
+      tags: ['usuario']
+      operationId: get-api-v1-usuarios-activacion
+      description: Api para activar un usuario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 'a9d1a5cc-4590-5c67-a0b2-a4b37b862802'
+          description: id de usuario
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro actualizado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                      estado:
+                        type: string
+                        example: 'ACTIVO'
+  /api/usuarios/{id}/inactivacion:
+    patch:
+      summary: Inactiva un usuario
+      tags: ['usuario']
+      operationId: get-api-v1-usuarios-inactivacion
+      description: Api para inactivar un usuario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 'a9d1a5cc-4590-5c67-a0b2-a4b37b862802'
+          description: id de usuario
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro actualizado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                      estado:
+                        type: string
+                        example: 'INACTIVO'
+  /api/usuarios/cuenta/contrasena:
+    patch:
+      summary: Actualiza la contrasena de un usuario autenticado
+      tags: ['usuario']
+      operationId: get-api-v1-usuarios-activacion-id-contrasena
+      description: Api para actualizar la contrasena de un usuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contrasenaActual:
+                  type: string
+                  example: 'contrasena'
+                contrasenaNueva:
+                  type: string
+                  example: 'contrasena-nueva'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro actualizado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                      estado:
+                        type: string
+                        example: 'ACTIVO'
+  /api/usuarios/cuenta/desbloqueo:
+    get:
+      summary: Desbloquea una cuenta bloqueada por muchos intentos fallidos
+      tags: ['usuario']
+      operationId: get-api-v1-usuarios-cuenta-desbloqueo
+      description: Api para desbloquear una cuenta
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 'a9d1a5cc-4590-5c67-a0b2-a4b37b862802'
+          description: id de desbloqueo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Cuenta desbloqueada exitosamente.'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+  /api/usuarios/{id}/restauracion:
+    patch:
+      summary: Restaura la contrasena de un usuario
+      tags: ['usuario']
+      operationId: get-api-v1-usuarios-contrasena-id
+      description: Api para restaurar la contrasena de un usuario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 'a9d1a5cc-4590-5c67-a0b2-a4b37b862802'
+          description: id de usuario
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Restauración de contraseña exitosa!!!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                      estado:
+                        type: string
+                        example: 'PENDIENTE'
+
+  /api/autorizacion/permisos:
+    get:
+      summary: Api para obtener las politicas definidas en formato CASBIN
+      tags: ['autorizacion']
+      operationId: get-api-autorizacion-politicas-roles
+      description: Api para obtener las politicas definidas en formato CASBIN
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro(s) obtenido(s) con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: string
+                      example:
+                        [
+                          'ADMINISTRADOR',
+                          '/usuarios',
+                          'create|read|update',
+                          'frontend',
+                        ]
+  /api/usuarios:
+    get:
+      summary: Api para obtener el listado de usuarios
+      tags: ['usuario']
+      operationId: get-api-usuarios
+      description: Api para obtener el listado de usuarios
+      parameters:
+        - in: query
+          name: pagina
+          schema:
+            type: string
+            example: 1
+          description: numero de la pagina a visualizar
+        - in: query
+          name: limite
+          schema:
+            type: string
+            example: 10
+          description: numero de filas a visualizar
+        - in: query
+          name: orden
+          schema:
+            type: string
+            example: ASC
+          description: tipo de orden a visualizar
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro(s) obtenido(s) con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      filas:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                            usuario:
+                              type: string
+                              example: 'ADMINISTRADOR'
+                            estado:
+                              type: string
+                              example: 'ACTIVO'
+                            ciudadaniaDigital:
+                              type: boolean
+                              example: false
+                            persona:
+                              type: object
+                              properties:
+                                nroDocumento:
+                                  type: string
+                                  example: '1234567'
+                                nombres:
+                                  type: string
+                                  example: 'JUAN'
+                                primerApellido:
+                                  type: string
+                                  example: 'PEREZ'
+                                segundoApellido:
+                                  type: string
+                                  example: 'PEREZ'
+                            usuarioRol:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  estado:
+                                    type: string
+                                    example: 'ACTIVO'
+                                  id:
+                                    type: string
+                                    example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                                  rol:
+                                    type: object
+                                    properties:
+                                      rol:
+                                        type: string
+                                        example: 'ADMINISTRADOR'
+                      total:
+                        type: number
+                        example: 1
+    post:
+      summary: Api para crear una nuevo usuario
+      tags: ['usuario']
+      operationId: post-api-usuarios
+      description: Api para crear un nuevo usuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correoElectronico:
+                  type: string
+                  example: '123456@yopmail.com'
+                persona:
+                  type: object
+                  properties:
+                    nombres:
+                      type: string
+                      example: 'JUAN'
+                    primerApellido:
+                      type: string
+                      example: 'PEREZ'
+                    segundoApellido:
+                      type: string
+                      example: 'PEREZ'
+                    nroDocumento:
+                      type: string
+                      example: '123456'
+                    fechaNacimiento:
+                      type: string
+                      example: '1999-11-11'
+                roles:
+                  type: array
+                  items:
+                    type: string
+                  example: ['d5de12df-3cc3-5a58-a742-be24030482d8']
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro creado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '81fd2f36-2857-41e5-aa7f-a8101297337d'
+                      estado:
+                        type: string
+                        example: 'CREADO'
+  /api/usuarios/cuenta/ciudadania:
+    post:
+      summary: Api para crear una nuevo usuario relacionado con ciudadania digital
+      tags: ['usuario']
+      operationId: post-api-usuarios-ciudadania
+      description: Api para crear un nuevo usuario relacionado con ciudadania digital
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usuario:
+                  type: string
+                  example: '123456'
+                roles:
+                  type: array
+                  items:
+                    type: string
+                  example: ['d5de12df-3cc3-5a58-a742-be24030482d8']
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro creado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '81fd2f36-2857-41e5-aa7f-a8101297337d'
+                      estado:
+                        type: string
+                        example: 'CREADO'
+  /api/usuarios/{id}:
+    patch:
+      summary: Actualiza datos de un usuario
+      tags: ['usuario']
+      operationId: patch-api-v1-usuarios-id
+      description: Api para actualizar datos de un usuario
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            example: 'a9d1a5cc-4590-5c67-a0b2-a4b37b862802'
+          description: id de usuario
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correoElectronico:
+                  type: string
+                  example: 'correo@yopmail.com'
+                roles:
+                  type: array
+                  items:
+                    type: string
+                  example: ['d5de12df-3cc3-5a58-a742-be24030482d8']
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro actualizado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+  /api/autorizacion/politicas:
+    get:
+      summary: Api para obtener el listado de politicas
+      tags: ['autorizacion']
+      operationId: get-api-autorizacion-politicas
+      description: Api para obtener el listado de politicas
+      parameters:
+        - in: query
+          name: tipo
+          schema:
+            type: string
+            example: frontend
+          description: tipo de politica
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro(s) obtenido(s) con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      filas:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            sujeto:
+                              type: string
+                              example: 'ADMINISTRADOR'
+                            objeto:
+                              type: string
+                              example: '/usuarios'
+                            accion:
+                              type: string
+                              example: 'read'
+                            app:
+                              type: string
+                              example: 'frontend'
+                      total:
+                        type: number
+                        example: 1
+    post:
+      summary: Api para crear una nueva politica
+      tags: ['autorizacion']
+      operationId: post-api-autorizacion-politicas
+      description: Api para crear una nueva politica
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sujeto:
+                  type: string
+                  example: 'ADMINISTRADOR'
+                objeto:
+                  type: string
+                  example: 'recurso'
+                accion:
+                  type: string
+                  example: 'read'
+                app:
+                  type: string
+                  example: 'frontend'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro creado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      sujeto:
+                        type: string
+                        example: 'ADMINISTRADOR'
+                      objeto:
+                        type: string
+                        example: 'recurso'
+                      accion:
+                        type: string
+                        example: 'read'
+                      app:
+                        type: string
+                        example: 'frontend'
+    delete:
+      summary: Api para eliminar una politica
+      tags: ['autorizacion']
+      operationId: delete-api-autorizacion-politicas
+      description: Api para eliminar una politica
+      responses:
+        '204':
+          description: NOT_CONTENT
+      parameters:
+        - in: query
+          name: sujeto
+          schema:
+            type: string
+            example: ADMINISTRADOR
+          description: nombre del rol (SUJETO)
+        - in: query
+          name: objeto
+          schema:
+            type: string
+            example: RECURSO
+          description: nombre del recurso (OBJETO)
+        - in: query
+          name: accion
+          schema:
+            type: string
+            example: GET
+          description: nombre de la accion (ACCION)
+        - in: query
+          name: app
+          schema:
+            type: string
+            example: Backend
+          description: nombre de la aplicacion
+  /api/parametros:
+    get:
+      summary: Api para obtener el listado de parametros
+      tags: ['parametros']
+      operationId: get-api-parametros
+      description: Api para obtener el listado de parametros
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro(s) obtenido(s) con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      filas:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                            codigo:
+                              type: string
+                              example: 'TD-1'
+                            nombre:
+                              type: string
+                              example: 'Tipo de documento CI'
+                            grupo:
+                              type: string
+                              example: 'TD'
+                      total:
+                        type: number
+                        example: 1
+    post:
+      summary: Api para crear un nuevo parametro
+      tags: ['parametros']
+      operationId: post-api-parametros
+      description: Api para crear un nuevo parametro
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codigo:
+                  type: string
+                  example: 'TD-2'
+                nombre:
+                  type: string
+                  example: 'Documento extranjeria'
+                grupo:
+                  type: string
+                  example: 'TD'
+                descripcion:
+                  type: string
+                  example: 'Tipo de documento de extranjeria'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro creado con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: object
+                    properties:
+                      codigo:
+                        type: string
+                        example: 'TD-1'
+                      nombre:
+                        type: string
+                        example: 'Documento extranjeria'
+                      grupo:
+                        type: string
+                        example: 'TD'
+                      descripcion:
+                        type: string
+                        example: 'Tipo de documento de extranjeria'
+                      id:
+                        type: string
+                        example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                      estado:
+                        type: string
+                        example: 'ACTIVO'
+  /api/parametros/{grupo}/listado:
+    get:
+      summary: Api para obtener el listado de parametros por grupo
+      tags: ['parametros']
+      operationId: get-api-parametros-grupo
+      description: Api para obtener el listado de parametros por grupo
+      parameters:
+        - in: path
+          name: grupo
+          required: true
+          schema:
+            type: string
+            example: 'TD'
+          description: grupo de parametros
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro(s) obtenido(s) con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                        nombre:
+                          type: string
+                          example: 'Cedula de identidad'
+                        codigo:
+                          type: string
+                          example: 'TD-1'
+  /api/autorizacion/roles:
+    get:
+      summary: Api para obtener el listado de roles
+      tags: ['parametros']
+      operationId: get-api-roles
+      description: Api para obtener el listado de roles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: 'Registro(s) obtenido(s) con exito!'
+                  finalizado:
+                    type: boolean
+                    example: true
+                  datos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 'd5de12df-3cc3-5a58-a742-be24030482d8'
+                        rol:
+                          type: string
+                          example: 'ADMINISTRADOR'

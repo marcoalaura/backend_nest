@@ -1,0 +1,13 @@
+include:
+  - /.gitlab/k8s.yml
+#  - /.gitlab/ansible.yml
+
+stages:
+  - prebuild
+  - build
+  - test
+  - sast
+  - release
+  - deploy
+  - dast
+  - setup

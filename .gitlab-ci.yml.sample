@@ -1,0 +1,191 @@
+stages:
+ - building
+ - testing
+ - deployment
+ - delivery
+ - configurations
+
+Instalando Dependencias:
+  image: node:14-alpine
+  stage: building
+  tags:
+    - backend-base-nestjs
+  script:
+    - npm set registry http://<REPOSITORIO>/npmjs
+    - npm set strict-ssl false
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+      - package-lock.json
+    expire_in: 1 day
+
+# Verificando paquetes:
+#   image: node:14-alpine
+#   tags:
+#     - backend-base-nestjs
+#   stage: testing
+#   except:
+#     refs:
+#       - master
+#   script:
+#     - npm set registry registry http://<REPOSITORIO>/npmjs
+#     - npm set strict-ssl false
+#     - npm audit
+#   allow_failure: true
+
+Verificando paquetes:
+  image: opensecurity/nodejsscan:latest
+  tags:
+    - backend-base-nestjs
+  stage: testing
+  except:
+    refs:
+      - master
+  script:
+    - njsscan .
+  allow_failure: true
+
+Ejecutando tests de integración:
+  image: node:14-alpine
+  stage: testing
+  except:
+    refs:
+      - master
+  tags:
+    - backend-base-nestjs
+  script:
+    - npm test
+  allow_failure: true
+
+Ejecutando tests de covertura:
+  image: node:14-alpine
+  stage: testing
+  except:
+    refs:
+      - master
+  tags:
+    - backend-base-nestjs
+  script:
+    - npm run test:cov
+  allow_failure: true
+
+# Ejecutando tests e2e:
+#   image: node:14-alpine
+#   stage: testing
+#   except:
+#     refs:
+#       - master
+#   tags:
+#     - backend-base-nestjs
+#   script:
+#     - npm run test:e2e
+#   allow_failure: true
+
+Generando reporte de calidad sonarqube:
+  image: sonarsource/sonar-scanner-cli:4.1
+  stage: testing
+  except:
+    refs:
+      - master
+  tags:
+    - backend-base-nestjs
+  script:
+    - npm run test:cov
+    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.sources=src -Dsonar.host.url=$TEST_REPO_URL -Dsonar.login=$TEST_REPO_TOKEN -Dsonar.exclusions=/node_modules/ -Dsonar.tests=test -Dsonar.test.inclusions=test/*.js -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info -Dsonar.testExecutionReportPaths=test-report.xml -Dsonar.projectVersion=v0.1.0
+
+Ejecutando scan de seguridad trivy:
+  image: docker:19.03.12
+  stage: testing
+  except:
+    refs:
+      - master
+  tags:
+    - backend-base-nestjs
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    IMAGE_NAME: "$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA"
+    TRIVY_URL_VERSION: https://api.github.com/repos/aquasecurity/trivy/releases/latest
+    REPORT: trivy-report_$CI_COMMIT_SHORT_SHA.json
+  services:
+    - name: docker:19.03.12-dind
+  before_script:
+    - docker info
+    - export TRIVY_VERSION=$(wget -qO - "$TRIVY_URL_VERSION"|grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+    - echo $TRIVY_VERSION
+    - export TRIVY_URL=https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_linux-64bit.tar.gz
+    - echo $TRIVY_URL
+    - wget --no-verbose $TRIVY_URL -O - |tar -zxvf -
+  script:
+    - docker build -t $IMAGE_NAME .
+    - docker images
+    - ./trivy --version
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o $REPORT $IMAGE_NAME
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE_NAME
+    - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE_NAME
+  artifacts:
+    paths:
+      - $REPORT
+
+Generando imagen docker (Dev):
+  image: gcr.io/kaniko-project/executor:v1.3.0-debug
+  stage: deployment
+  only:
+    refs:
+      - develop
+  tags:
+    - backend-base-nestjs
+  script:
+    - echo $CONFIGURE_IMAGE | base64 -d > ./configure-image-generation.sh
+    - chmod +x ./configure-image-generation.sh
+    - . ./configure-image-generation.sh
+    - echo $CI_COMMIT_SHORT_SHA
+    - echo $CI_COMMIT_MESSAGE
+    - echo $CI_COMMIT_REF_NAME
+    - /kaniko/executor --context . --target=development --dockerfile ./Dockerfile --build-arg CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA --build-arg CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME --build-arg CI_COMMIT_MESSAGE="$CI_COMMIT_MESSAGE" --destination $IR_REPO_URL:dev
+Desplegando container (Dev):
+  image: alpine/helm:3.1.3
+  stage: delivery
+  only:
+    refs:
+      - develop
+  tags:
+    - backend-base-nestjs
+  script:
+    - echo $CI_PROJECT_NAME
+    - export IOP_VAULT_ENVIRONMENT=develop
+    - echo $DEPLOY_CONTAINER | base64 -d > ./configure-container-deployment.sh
+    - chmod +x ./configure-container-deployment.sh
+    - . ./configure-container-deployment.sh
+    - helm repo add --username "robot$"$IR_USER --password $IR_PASS repository $IR_CHART_REPO_URL
+    - echo $IR_USER
+    - echo $IR_PASS
+    - echo $IR_CHART_REPO_URL
+    - helm repo update
+    - echo $CI_COMMIT_SHORT_SHA
+    - echo $IR_CHART_NAME
+    - cat values.yml
+    - cat ./config.yml
+    - helm upgrade -i $CI_PROJECT_NAME repository/$IR_CHART_NAME --kubeconfig ./config.yml -f values.yml -n development --debug --force --set gitlabCommit=$CI_COMMIT_SHORT_SHA
+Ejecutar migraciones de la base de datos (dev):
+  image: node:14.16-stretch-slim
+  stage: configurations
+  tags:
+    - backend-base-nestjs
+  script:
+    - echo deb http://<REPOSITORIO>/os/ftp.debian.org/debian stretch main contrib > /etc/apt/sources.list
+    - echo deb http://<REPOSITORIO>/os/ftp.debian.org/debian stretch-updates main contrib >> /etc/apt/sources.list
+    - echo deb http://<REPOSITORIO>/os/security.debian.org/debian-security/ stretch/updates main contrib >> /etc/apt/sources.list
+    - npm set registry http://<REPOSITORIO>/nexus/repository/npmjs
+    - npm set strict-ssl false
+    - apt-get update && apt-get install -y curl jq
+    - npm install -g convert-json-env
+    - 'curl https://$(echo $VAULT_DOMAIN)/v1/iop/develop/backend-base-nestjs --header "X-Vault-Token: $(echo $VAULT_TOKEN)" > secretos.json'
+    - echo $(jq ".data" secretos.json) > values.json
+    - convert-json-env values.json --out=.env
+    - npm ci
+    - npm run migrations:run
+  only:
+    - develop
+  when: manual
